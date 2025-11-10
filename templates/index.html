@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f6f8;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 500px;
+  margin: 60px auto;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin-top: 15px;
+  font-weight: bold;
+  color: #555;
+}
+
+input[type="text"] {
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+button {
+  margin-top: 20px;
+  padding: 12px;
+  background-color: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #005fa3;
+}</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YouTube Sentiment Analyzer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>YouTube Comments Sentiment Analyzer</h1>
+    <form action="/analyze" method="POST">
+      <label for="video_id">YouTube Video ID:</label>
+      <input type="text" id="video_id" name="video_id" required />
+
+      <label for="output_file">Output CSV Filename:</label>
+      <input type="text" id="output_file" name="output_file" value="comments.csv" required />
+
+      <label for="analyze">
+        <input type="checkbox" id="analyze" name="analyze" />
+        Run Sentiment Analysis
+      </label>
+
+      <button type="submit">Start</button>
+    </form>
+  </div>
+</body>
+</html>
