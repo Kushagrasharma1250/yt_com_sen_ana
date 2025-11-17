@@ -1,83 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <style>body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f6f8;
-  margin: 0;
-  padding: 0;
-}
-
-.container {
-  max-width: 500px;
-  margin: 60px auto;
-  background-color: #fff;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
-  text-align: center;
-  color: #333;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-label {
-  margin-top: 15px;
-  font-weight: bold;
-  color: #555;
-}
-
-input[type="text"] {
-  padding: 10px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-input[type="checkbox"] {
-  margin-right: 10px;
-}
-
-button {
-  margin-top: 20px;
-  padding: 12px;
-  background-color: #0077cc;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #005fa3;
-}</style>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>YouTube Sentiment Analyzer</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a0000 50%, #000000 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.3) 2px, rgba(0,0,0,.3) 4px),
+        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,.3) 2px, rgba(0,0,0,.3) 4px);
+      opacity: 0.3;
+      pointer-events: none;
+      animation: grain 8s steps(10) infinite;
+    }
+
+    @keyframes grain {
+      0%, 100% { transform: translate(0, 0); }
+      10% { transform: translate(-5%, -10%); }
+      20% { transform: translate(-15%, 5%); }
+      30% { transform: translate(7%, -25%); }
+      40% { transform: translate(-5%, 25%); }
+      50% { transform: translate(-15%, 10%); }
+      60% { transform: translate(15%, 0%); }
+      70% { transform: translate(0%, 15%); }
+      80% { transform: translate(3%, 35%); }
+      90% { transform: translate(-10%, 10%); }
+    }
+
+    .glow-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      animation: float 20s infinite ease-in-out;
+    }
+
+    .orb-1 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(139, 0, 0, 0.6), transparent);
+      top: -100px;
+      left: -100px;
+      animation-delay: 0s;
+    }
+
+    .orb-2 {
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(220, 20, 60, 0.5), transparent);
+      bottom: -50px;
+      right: -50px;
+      animation-delay: 5s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -30px) scale(1.1); }
+      66% { transform: translate(-20px, 20px) scale(0.9); }
+    }
+
+    .container {
+      max-width: 520px;
+      width: 90%;
+      position: relative;
+      z-index: 1;
+      background: rgba(20, 0, 0, 0.4);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 50px 40px;
+      border: 1px solid rgba(139, 0, 0, 0.3);
+      box-shadow: 
+        0 8px 32px 0 rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
+        0 0 60px rgba(139, 0, 0, 0.2);
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      text-align: center;
+      color: #ffffff;
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+      text-shadow: 0 0 20px rgba(220, 20, 60, 0.5);
+    }
+
+    .subtitle {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+      margin-bottom: 40px;
+      letter-spacing: 1px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-top: 24px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      margin-bottom: 8px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+
+    input[type="text"] {
+      padding: 14px 18px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(139, 0, 0, 0.4);
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: rgba(220, 20, 60, 0.8);
+      background: rgba(0, 0, 0, 0.6);
+      box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.2);
+    }
+
+    input[type="text"]::placeholder {
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      margin-top: 24px;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      border: 1px solid rgba(139, 0, 0, 0.3);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .checkbox-container:hover {
+      background: rgba(0, 0, 0, 0.5);
+      border-color: rgba(220, 20, 60, 0.5);
+    }
+
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: #dc143c;
+      margin-right: 12px;
+    }
+
+    .checkbox-label {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    button {
+      margin-top: 36px;
+      padding: 16px;
+      background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(220, 20, 60, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px rgba(220, 20, 60, 0.6);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .input-group {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(220, 20, 60, 0.6);
+      font-size: 18px;
+    }
+  </style>
 </head>
 <body>
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
+  
   <div class="container">
-    <h1>YouTube Comments Sentiment Analyzer</h1>
+    <h1>YouTube Sentiment Analyzer</h1>
+    <p class="subtitle">AI-Powered Comment Analysis</p>
+    
     <form action="/analyze" method="POST">
-      <label for="video_id">YouTube Video ID:</label>
-      <input type="text" id="video_id" name="video_id" required />
+      <label for="video_id">Video ID</label>
+      <div class="input-group">
+        <input type="text" id="video_id" name="video_id" placeholder="Enter YouTube video ID" required />
+        <span class="input-icon">▶</span>
+      </div>
 
-      <label for="output_file">Output CSV Filename:</label>
-      <input type="text" id="output_file" name="output_file" value="comments.csv" required />
+      <label for="output_file">Output Filename</label>
+      <div class="input-group">
+        <input type="text" id="output_file" name="output_file" value="comments.csv" placeholder="filename.csv" required />
+        <span class="input-icon">📄</span>
+      </div>
 
-      <label for="analyze">
+      <div class="checkbox-container">
         <input type="checkbox" id="analyze" name="analyze" />
-        Run Sentiment Analysis
-      </label>
+        <label for="analyze" class="checkbox-label">Enable Sentiment Analysis</label>
+      </div>
 
-      <button type="submit">Start</button>
+      <button type="submit">Start Analysis</button>
     </form>
   </div>
 </body>
